@@ -8,10 +8,24 @@ import (
 	"lamoda_task/internal/app/persistence/repositories"
 )
 
+type Item struct {
+	Code     int
+	Name     string
+	Size     int
+	Quantity int
+}
+
+type Warehouse struct {
+	Id         int
+	Name       string
+	Accessible bool
+	Items      []*Item
+}
+
 type ItemService interface {
 	MakeReservation(ctx context.Context, itemCodes []int) error
 	FreeReservation(ctx context.Context, itemCodes []int) error
-	Get(ctx context.Context, warehouseId int) (*models.Warehouse, error)
+	Warehouse(ctx context.Context, warehouseId int) (*Warehouse, error)
 }
 
 type _itemServiceImpl struct {
@@ -97,7 +111,7 @@ func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []in
 	})
 }
 
-func (svc *_itemServiceImpl) Get(ctx context.Context, warehouseId int) (*models.Warehouse, error) {
+func (svc *_itemServiceImpl) Warehouse(ctx context.Context, warehouseId int) (*Warehouse, error) {
 	var warehouse *models.Warehouse
 	err := svc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
 		_warehouse, err := svc.warehouseRepo.Get(warehouseId)
@@ -107,5 +121,25 @@ func (svc *_itemServiceImpl) Get(ctx context.Context, warehouseId int) (*models.
 		warehouse = _warehouse
 		return nil
 	})
-	return warehouse, err
+	if err != nil {
+		return nil, err
+	}
+
+	response := &Warehouse{
+		Id:         warehouseId,
+		Name:       warehouse.Name,
+		Accessible: warehouse.Accessible,
+		Items:      []*Item{},
+	}
+
+	for _, item := range warehouse.Items {
+		response.Items = append(response.Items, &Item{
+			Code:     item.Code,
+			Name:     item.Name,
+			Size:     item.Size,
+			Quantity: item.Quantity,
+		})
+	}
+
+	return response, err
 }

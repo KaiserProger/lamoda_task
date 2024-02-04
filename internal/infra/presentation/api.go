@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"lamoda_task/internal/app/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
@@ -24,7 +25,7 @@ type ItemResponse struct {
 }
 
 type WarehouseRequest struct {
-	WarehouseId int `json:"warehouse_id"`
+	Id int `json:"warehouse_id"`
 }
 
 type WarehouseResponse struct {
@@ -82,11 +83,46 @@ func (handler *_apiHandler) FreeReservation(w http.ResponseWriter, req *http.Req
 }
 
 func (handler *_apiHandler) GetWarehouse(w http.ResponseWriter, req *http.Request) {
+	warehouseParamId := req.URL.Query().Get("id")
 
+	warehouseId, err := strconv.Atoi(warehouseParamId)
+	if err != nil {
+		handler.logger.Error("decode warehouse id param fail", zap.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	request := &WarehouseRequest{
+		Id: warehouseId,
+	}
+
+	warehouse, err := handler.svc.Warehouse(context.Background(), request.Id)
+	if err != nil {
+		handler.logger.Error("service execution fail", zap.Error(err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	response := WarehouseResponse{
+		Name:       warehouse.Name,
+		Accessible: warehouse.Accessible,
+		Items:      []*ItemResponse{},
+	}
+
+	for _, item := range warehouse.Items {
+		_item := ItemResponse(*item)
+		response.Items = append(response.Items, &_item)
+	}
+
+	if err := json.NewEncoder(w).Encode(&response); err != nil {
+		handler.logger.Error("encode response fail", zap.Error(err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 func (handler *_apiHandler) RegisterHandle(_mux *mux.Router) {
 	_mux.HandleFunc("/reserve", handler.MakeReservation).Methods("POST")
 	_mux.HandleFunc("/reserve", handler.FreeReservation).Methods("DELETE")
-	_mux.HandleFunc("/warehouses", nil).Methods("GET")
+	_mux.HandleFunc("/warehouses", handler.GetWarehouse).Methods("GET")
 }
