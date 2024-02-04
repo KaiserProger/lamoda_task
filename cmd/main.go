@@ -3,11 +3,13 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"lamoda_task/internal/app/services"
 	"lamoda_task/internal/infra/persistence/postgres"
 	"lamoda_task/internal/infra/presentation"
 	"net/http"
 	"os"
+	"strconv"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 
@@ -23,9 +25,22 @@ func main() {
 
 	logger.Info("logger initialized")
 
-	driverName, dbName, httpHost := "pgx", os.Getenv("DATABASE_URL"), os.Getenv("HOST_ADDRESS")
+	httpHost := os.Getenv("HOST_ADDRESS")
 
-	db, err := sql.Open(driverName, dbName)
+	driverName := "pgx"
+	dbUser, dbPassword := os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD")
+	dbHost, _port, dbName := os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_PORT"), os.Getenv("POSTGRES_DB")
+
+	dbPort, err := strconv.Atoi(_port)
+	if err != nil {
+		logger.Fatal("cannot receive database port or is not a number", zap.Error(err))
+	}
+
+	logger.Info("configuration read")
+
+	database_dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s", dbHost, dbPort, dbUser, dbPassword, dbName)
+
+	db, err := sql.Open(driverName, database_dsn)
 	if err != nil {
 		logger.Fatal("database did not initialize", zap.Error(err))
 	}
