@@ -16,8 +16,21 @@ const (
 			AND warehouses_items.item_code IN (?)
 			AND warehouses_items.quantity > 0
 		GROUP BY warehouses_items.item_code;`
-	getWarehousesQuery = `SELECT * FROM warehouses WHERE id IN (?);`
-	getReservations    = `
+	getWarehouseBaseQuery = `
+		SELECT *
+		FROM warehouses
+		WHERE id = ?;`
+	getWarehouseItemsQuery = `
+		SELECT
+			items.code,
+			items.name,
+			items.size,
+			warehouses_items.quantity
+		FROM warehouses_items
+		LEFT JOIN items ON warehouses_items.item_code = items.code
+		WHERE warehouses_items.warehouse_id = ?;
+	`
+	getReservations = `
 		SELECT item_code, warehouse_id, quantity FROM reservations
 		WHERE (item_code, quantity) IN (?)
 		ORDER BY created_at DESC;`

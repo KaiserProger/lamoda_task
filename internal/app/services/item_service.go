@@ -114,7 +114,7 @@ func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []in
 func (svc *_itemServiceImpl) Warehouse(ctx context.Context, warehouseId int) (*Warehouse, error) {
 	var warehouse *models.Warehouse
 	err := svc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
-		_warehouse, err := svc.warehouseRepo.Get(warehouseId)
+		_warehouse, err := svc.warehouseRepo.Get(txCtx, warehouseId)
 		if err != nil {
 			return errors.Join(errors.New("get warehouse fail"), err)
 		}

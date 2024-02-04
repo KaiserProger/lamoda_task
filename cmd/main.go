@@ -40,8 +40,9 @@ func main() {
 
 	itemRepo := postgres.NewItemRepository()
 	reserveRepo := postgres.NewReserveRepository()
+	warehouseRepo := postgres.NewWarehouseRepository()
 
-	itemService := services.NewItemService(txManager, itemRepo, nil, reserveRepo)
+	itemService := services.NewItemService(txManager, itemRepo, warehouseRepo, reserveRepo)
 
 	handler := presentation.NewApiHandler(itemService, logger)
 	logger.Info("all dependencies initialized")
