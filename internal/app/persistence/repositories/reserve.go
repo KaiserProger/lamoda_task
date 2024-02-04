@@ -6,5 +6,5 @@ type ReserveRepository interface {
 	// Make reservation.
 	MakeReservation(ctx context.Context, orders []*StoredItem) error
 	// Free items from the latest reservation.
-	FreeReservation(ctx context.Context, itemCodes []int) error
+	FreeReservation(ctx context.Context, itemsCount map[int]int) error
 }

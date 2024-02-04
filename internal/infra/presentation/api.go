@@ -6,6 +6,7 @@ import (
 	"lamoda_task/internal/app/services"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 )
 
@@ -15,7 +16,21 @@ type ReserveRequest struct {
 
 type FreeReserveRequest = ReserveRequest
 
-type GetWarehouseItems struct {
+type ItemResponse struct {
+	Code     int    `json:"code"`
+	Name     string `json:"name"`
+	Size     int    `json:"size"`
+	Quantity int    `json:"quantity"`
+}
+
+type WarehouseRequest struct {
+	WarehouseId int `json:"warehouse_id"`
+}
+
+type WarehouseResponse struct {
+	Name       string          `json:"name"`
+	Accessible bool            `json:"accessible"`
+	Items      []*ItemResponse `json:"items"`
 }
 
 type _apiHandler struct {
@@ -23,9 +38,10 @@ type _apiHandler struct {
 	logger *zap.Logger
 }
 
-func NewApiHandler(svc services.ItemService) *_apiHandler {
+func NewApiHandler(svc services.ItemService, logger *zap.Logger) *_apiHandler {
 	return &_apiHandler{
-		svc: svc,
+		svc:    svc,
+		logger: logger,
 	}
 }
 
@@ -63,4 +79,14 @@ func (handler *_apiHandler) FreeReservation(w http.ResponseWriter, req *http.Req
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (handler *_apiHandler) GetWarehouse(w http.ResponseWriter, req *http.Request) {
+
+}
+
+func (handler *_apiHandler) RegisterHandle(_mux *mux.Router) {
+	_mux.HandleFunc("/reserve", handler.MakeReservation).Methods("POST")
+	_mux.HandleFunc("/reserve", handler.FreeReservation).Methods("DELETE")
+	_mux.HandleFunc("/warehouses", nil).Methods("GET")
 }

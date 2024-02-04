@@ -11,7 +11,7 @@ import (
 type ItemService interface {
 	MakeReservation(ctx context.Context, itemCodes []int) error
 	FreeReservation(ctx context.Context, itemCodes []int) error
-	GetItems(ctx context.Context, warehouseId int) ([]*models.Warehouse, error)
+	Get(ctx context.Context, warehouseId int) (*models.Warehouse, error)
 }
 
 type _itemServiceImpl struct {
@@ -21,7 +21,10 @@ type _itemServiceImpl struct {
 	reverseRepo   repositories.ReserveRepository
 }
 
-func NewItemService() ItemService {
+func NewItemService(txManager persistence.Transactional,
+	itemRepo repositories.ItemRepository,
+	warehouseRepo repositories.WarehouseRepository,
+	reverseRepo repositories.ReserveRepository) ItemService {
 	return &_itemServiceImpl{}
 }
 
@@ -88,20 +91,21 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 }
 
 func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []int) error {
+	countMap := svc.itemCodesAsUniqueMap(itemCodes)
 	return svc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
-		return svc.reverseRepo.FreeReservation(txCtx, itemCodes)
+		return svc.reverseRepo.FreeReservation(txCtx, countMap)
 	})
 }
 
-func (svc *_itemServiceImpl) GetItems(ctx context.Context, warehouseId int) ([]*models.Warehouse, error) {
-	var warehouses []*models.Warehouse
+func (svc *_itemServiceImpl) Get(ctx context.Context, warehouseId int) (*models.Warehouse, error) {
+	var warehouse *models.Warehouse
 	err := svc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
-		_warehouses, err := svc.warehouseRepo.Get(warehouseId)
+		_warehouse, err := svc.warehouseRepo.Get(warehouseId)
 		if err != nil {
 			return errors.Join(errors.New("get warehouse fail"), err)
 		}
-		warehouses = _warehouses
+		warehouse = _warehouse
 		return nil
 	})
-	return warehouses, err
+	return warehouse, err
 }
