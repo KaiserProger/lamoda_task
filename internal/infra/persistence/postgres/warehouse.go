@@ -14,11 +14,3 @@ func NewWarehouseRepository() app.WarehouseRepository {
 func (*_warehouseRepositoryImpl) Get(warehouseId int) (*models.Warehouse, error) {
 	panic("unimplemented")
 }
-
-func (*_warehouseRepositoryImpl) Items(warehouseId int) ([]*models.Item, error) {
-	panic("unimplemented")
-}
-
-func (*_warehouseRepositoryImpl) Update(*models.Warehouse) error {
-	panic("unimplemented")
-}
