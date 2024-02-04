@@ -1,12 +1,83 @@
 {
     "openapi":"3.0.2",
     "info": {
-      "title":"API Title",
+      "title":"Lamoda task Web API Specification",
       "version":"1.0"
     },
     "servers": [
       {"url":"https://api.server.test/v1"}
     ],
     "paths": {
+        "/reserve": {
+            "post": {
+                "summary": "Makes a new reservation",
+                "description": "Makes a new items reservation. Can reserve items on multiple storages",
+                "responses": {
+                    "200": {
+                        "description": "Reservation created successfully"
+                    },
+                    "422": {
+                        "description": "Invalid item codes"
+                    },
+                    "500": {
+                        "description": "Something went wrong. Developers will check logs later"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Frees existing reservation",
+                "responses": {
+                    "200": {
+                        "description": "Reservation freed successfully"
+                    },
+                    "422": {
+                        "description": "Invalid item codes"
+                    },
+                    "500": {
+                        "description": "Something went wrong. Developers will check logs later"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Warehouse": {
+                "type": "object",
+                "properties": {
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Accessible": {
+                        "type": "boolean",
+                        "description": "Determines if warehouse can be accessed right now"
+                    },
+                    "Items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Item"
+                        }
+                    }
+                }
+            },
+            "Item": {
+                "type": "object",
+                "properties": {
+                    "Code": {
+                        "type": "integer"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Size": {
+                        "type": "integer"
+                    },
+                    "Quantity": {
+                        "type": "integer",
+                        "description": "How much items is stored on selected warehouse"
+                    }
+                }
+            }
+        }
     }
 }
