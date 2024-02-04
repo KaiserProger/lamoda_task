@@ -11,13 +11,19 @@ services:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
   migrations:
     build:
       context: ./migrations
       dockerfile: Dockerfile
     env_file: .env
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - default
   server:

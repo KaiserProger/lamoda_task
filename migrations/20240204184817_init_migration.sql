@@ -2,14 +2,14 @@
 -- +goose StatementBegin
 CREATE TABLE items(
     code int PRIMARY KEY,
-    name string,
+    name varchar(255),
     size int
 );
 
 CREATE TABLE warehouses(
     id int PRIMARY KEY,
-    name string,
-    accessible bool
+    name varchar(255),
+    accessible boolean
 );
 
 CREATE TABLE warehouses_items(
