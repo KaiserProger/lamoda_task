@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	appErrors "lamoda_task/internal/app/errors"
 	"lamoda_task/internal/app/persistence"
 	app "lamoda_task/internal/app/persistence/repositories"
 )
@@ -16,12 +17,12 @@ func NewReserveRepository() app.ReserveRepository {
 func (*_reserveRepositoryImpl) MakeReservation(ctx context.Context, orders []*app.StoredItem) error {
 	txCtx, ok := ctx.(persistence.TransactionalContext)
 	if !ok {
-		return errors.New("context is not transactional")
+		return appErrors.ErrNotTransactional
 	}
 
 	tx, err := txCtx.GetTx()
 	if err != nil {
-		return errors.Join(errors.New("get transaction from context fail"), err)
+		return err
 	}
 
 	argsArray := [][]any{}
@@ -41,12 +42,12 @@ func (*_reserveRepositoryImpl) MakeReservation(ctx context.Context, orders []*ap
 func (*_reserveRepositoryImpl) FreeReservation(ctx context.Context, itemsCount map[int]int) error {
 	txCtx, ok := ctx.(persistence.TransactionalContext)
 	if !ok {
-		return errors.New("context is not transactional")
+		return appErrors.ErrNotTransactional
 	}
 
 	tx, err := txCtx.GetTx()
 	if err != nil {
-		return errors.Join(errors.New("get transaction from context fail"), err)
+		return err
 	}
 
 	getReservationsArgs := [][2]int{}

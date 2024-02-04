@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"errors"
+	appErrors "lamoda_task/internal/app/errors"
 	application "lamoda_task/internal/app/persistence"
 )
 
@@ -26,7 +26,7 @@ func NewTransactionalContext(ctx context.Context, tx *sql.Tx) application.Transa
 func (txCtx *_transactionalContextImpl) GetTx() (*sql.Tx, error) {
 	tx, ok := txCtx.Value(txKey{}).(*sql.Tx)
 	if !ok {
-		return nil, errors.New("no tx provided")
+		return nil, appErrors.ErrNoTxInCtx
 	}
 
 	return tx, nil

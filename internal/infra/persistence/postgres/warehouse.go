@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	appErrors "lamoda_task/internal/app/errors"
 	"lamoda_task/internal/app/models"
 	"lamoda_task/internal/app/persistence"
 	app "lamoda_task/internal/app/persistence/repositories"
@@ -17,16 +19,19 @@ func NewWarehouseRepository() app.WarehouseRepository {
 func (*_warehouseRepositoryImpl) Get(ctx context.Context, warehouseId int) (*models.Warehouse, error) {
 	txCtx, ok := ctx.(persistence.TransactionalContext)
 	if !ok {
-		return nil, errors.New("context is not transactional")
+		return nil, appErrors.ErrNotTransactional
 	}
 
 	tx, err := txCtx.GetTx()
 	if err != nil {
-		return nil, errors.Join(errors.New("get transaction fail"), err)
+		return nil, err
 	}
 
 	rows, err := tx.Query(getWarehouseBaseQuery, warehouseId)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, errors.Join(errors.New("query warehouse fail"), err)
 	}
 	defer rows.Close()

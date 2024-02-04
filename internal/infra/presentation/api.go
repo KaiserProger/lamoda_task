@@ -51,7 +51,7 @@ func (handler *_apiHandler) MakeReservation(w http.ResponseWriter, req *http.Req
 
 	if err := json.NewDecoder(req.Body).Decode(&request); err != nil {
 		handler.logger.Error("decode request fail", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -69,7 +69,7 @@ func (handler *_apiHandler) FreeReservation(w http.ResponseWriter, req *http.Req
 
 	if err := json.NewDecoder(req.Body).Decode(&request); err != nil {
 		handler.logger.Error("decode request fail", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -88,7 +88,7 @@ func (handler *_apiHandler) GetWarehouse(w http.ResponseWriter, req *http.Reques
 	warehouseId, err := strconv.Atoi(warehouseParamId)
 	if err != nil {
 		handler.logger.Error("decode warehouse id param fail", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -100,6 +100,11 @@ func (handler *_apiHandler) GetWarehouse(w http.ResponseWriter, req *http.Reques
 	if err != nil {
 		handler.logger.Error("service execution fail", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if warehouse == nil {
+		handler.logger.Error("warehouse not found")
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 

@@ -124,6 +124,9 @@ func (svc *_itemServiceImpl) Warehouse(ctx context.Context, warehouseId int) (*W
 	if err != nil {
 		return nil, err
 	}
+	if warehouse == nil {
+		return nil, nil
+	}
 
 	response := &Warehouse{
 		Id:         warehouseId,
