@@ -32,14 +32,19 @@ type _itemServiceImpl struct {
 	txManager     persistence.Transactional
 	itemRepo      repositories.ItemRepository
 	warehouseRepo repositories.WarehouseRepository
-	reverseRepo   repositories.ReserveRepository
+	reserveRepo   repositories.ReserveRepository
 }
 
 func NewItemService(txManager persistence.Transactional,
 	itemRepo repositories.ItemRepository,
 	warehouseRepo repositories.WarehouseRepository,
-	reverseRepo repositories.ReserveRepository) ItemService {
-	return &_itemServiceImpl{}
+	reserveRepo repositories.ReserveRepository) ItemService {
+	return &_itemServiceImpl{
+		txManager:     txManager,
+		itemRepo:      itemRepo,
+		warehouseRepo: warehouseRepo,
+		reserveRepo:   reserveRepo,
+	}
 }
 
 func (svc *_itemServiceImpl) uniqueItemCodes(itemCodes []int) []int {
@@ -74,7 +79,7 @@ func (svc *_itemServiceImpl) itemCodesAsUniqueMap(itemCodes []int) map[int]int {
 func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []int) error {
 	uniqueCodes := svc.uniqueItemCodes(itemCodes)
 	countMap := svc.itemCodesAsUniqueMap(itemCodes)
-	reserveOrders := make([]*repositories.StoredItem, 0)
+	reserveOrders := make([]*models.ReservationItem, 0)
 	return svc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
 		storedItems, err := svc.itemRepo.GetStoredAt(txCtx, uniqueCodes)
 		if err != nil {
@@ -90,14 +95,14 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 			finalQty := min(qty, storedItem.Quantity)
 			countMap[storedItem.ItemCode] -= finalQty
 
-			reserveOrders = append(reserveOrders, &repositories.StoredItem{
+			reserveOrders = append(reserveOrders, &models.ReservationItem{
 				ItemCode:    storedItem.ItemCode,
 				WarehouseId: storedItem.WarehouseId,
 				Quantity:    finalQty,
 			})
 		}
 
-		if err := svc.reverseRepo.MakeReservation(txCtx, reserveOrders); err != nil {
+		if err := svc.reserveRepo.MakeReservation(txCtx, reserveOrders); err != nil {
 			return errors.Join(errors.New("make reservation fail"), err)
 		}
 		return nil
@@ -107,7 +112,22 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []int) error {
 	countMap := svc.itemCodesAsUniqueMap(itemCodes)
 	return svc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
-		return svc.reverseRepo.FreeReservation(txCtx, countMap)
+		reserveItems, err := svc.reserveRepo.GetReservation(ctx, countMap)
+		if err != nil {
+			return errors.Join(errors.New("get reservation items fail"), err)
+		}
+
+		err = svc.reserveRepo.FreeReservation(txCtx, reserveItems)
+		if err != nil {
+			return errors.Join(errors.New("free reservation fail"), err)
+		}
+
+		err = svc.warehouseRepo.UpdateStock(ctx, reserveItems)
+		if err != nil {
+			return errors.Join(errors.New("update stock fail"), err)
+		}
+
+		return nil
 	})
 }
 

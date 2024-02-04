@@ -69,3 +69,24 @@ func (*_warehouseRepositoryImpl) Get(ctx context.Context, warehouseId int) (*mod
 
 	return &warehouse, nil
 }
+
+func (*_warehouseRepositoryImpl) UpdateStock(ctx context.Context, reservation []*models.ReservationItem) error {
+	txCtx, ok := ctx.(persistence.TransactionalContext)
+	if !ok {
+		return appErrors.ErrNotTransactional
+	}
+
+	tx, err := txCtx.GetTx()
+	if err != nil {
+		return err
+	}
+
+	dereserveArgs := (&models.ReservationItem{}).MultipleIntArgs(reservation)
+
+	_, err = tx.Exec(updateStockQuery, dereserveArgs)
+	if err != nil {
+		return errors.Join(errors.New("update stock fail"), err)
+	}
+
+	return nil
+}
