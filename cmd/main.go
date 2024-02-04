@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"lamoda_task/internal/app/services"
-	"lamoda_task/internal/infra/persistence"
 	"lamoda_task/internal/infra/persistence/postgres"
 	"lamoda_task/internal/infra/presentation"
 	"net/http"
@@ -36,7 +35,7 @@ func main() {
 	router := mux.NewRouter()
 	logger.Info("router initialized")
 
-	txManager := persistence.NewTransactional(db)
+	txManager := postgres.NewTransactional(db)
 
 	itemRepo := postgres.NewItemRepository()
 	reserveRepo := postgres.NewReserveRepository()
