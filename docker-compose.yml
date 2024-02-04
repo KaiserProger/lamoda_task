@@ -3,12 +3,23 @@ services:
   database:
     image: postgres
     restart: always
-    env_file:
-      - .env
+    environment:
+      POSTGRES_DB:       ${DBNAME}
+      POSTGRES_USER:     ${DBUSER}
+      POSTGRES_PASSWORD: ${DBPASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
+  migrations:
+    build:
+      context: ./migrations
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - database
+    networks:
+      - default
   server:
     build:
       context: .
@@ -16,6 +27,7 @@ services:
     env_file: .env
     depends_on:
       - database
+      - migrations
     networks:
       - default
     ports:

@@ -28,8 +28,8 @@ func main() {
 	httpHost := os.Getenv("HOST_ADDRESS")
 
 	driverName := "pgx"
-	dbUser, dbPassword := os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD")
-	dbHost, _port, dbName := os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_PORT"), os.Getenv("POSTGRES_DB")
+	dbUser, dbPassword := os.Getenv("DBUSER"), os.Getenv("DBPASSWORD")
+	dbHost, _port, dbName := os.Getenv("DBHOST"), os.Getenv("DBPORT"), os.Getenv("DBNAME")
 
 	dbPort, err := strconv.Atoi(_port)
 	if err != nil {
