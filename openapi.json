@@ -1,17 +1,28 @@
 {
-    "openapi":"3.0.2",
+    "openapi": "3.0.2",
     "info": {
-      "title":"Lamoda task Web API Specification",
-      "version":"1.0"
+      "title": "Lamoda task Web API Specification",
+      "description": "This is a Web API for Lamoda test task. It can do reservations and get warehouses",
+      "version": "1.0"
     },
     "servers": [
-      {"url":"https://api.server.test/v1"}
+      {"url": "https://api.server.test/v1"}
     ],
     "paths": {
         "/reserve": {
             "post": {
                 "summary": "Makes a new reservation",
-                "description": "Makes a new items reservation. Can reserve items on multiple storages",
+                "operationId": "make_reservation",
+                "description": "Makes a new items reservation. Can reserve items on multiple warehouses",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReservationRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Reservation created successfully"
@@ -24,14 +35,63 @@
                     }
                 }
             },
-            "delete": {
+            "patch": {
                 "summary": "Frees existing reservation",
+                "operationId": "free_reservation",
+                "description": "Frees existing items reservation. Can free reservation on multiple warehouses",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReservationRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Reservation freed successfully"
                     },
                     "422": {
                         "description": "Invalid item codes"
+                    },
+                    "500": {
+                        "description": "Something went wrong. Developers will check logs later"
+                    }
+                }
+            }
+        },
+        "/warehouses": {
+            "get": {
+                "summary": "Get warehouse by ID",
+                "operationId": "get_warehouse",
+                "description": "Returns a warehouse by ID.",
+                "parameters": [{
+                    "name": "warehouse_id",
+                    "in": "query",
+                    "description": "Warehouse ID",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Warehouse read succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Warehouse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Warehouse not found"
+                    },
+                    "422": {
+                        "description": "Invalid warehouse id in params"
                     },
                     "500": {
                         "description": "Something went wrong. Developers will check logs later"
@@ -45,14 +105,16 @@
             "Warehouse": {
                 "type": "object",
                 "properties": {
-                    "Name": {
-                        "type": "string"
+                    "name": {
+                        "type": "string",
+                        "example": "A warehouse"
                     },
-                    "Accessible": {
+                    "accessible": {
                         "type": "boolean",
-                        "description": "Determines if warehouse can be accessed right now"
+                        "description": "Determines if warehouse can be accessed right now",
+                        "example": true
                     },
-                    "Items": {
+                    "items": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/Item"
@@ -63,18 +125,36 @@
             "Item": {
                 "type": "object",
                 "properties": {
-                    "Code": {
-                        "type": "integer"
-                    },
-                    "Name": {
-                        "type": "string"
-                    },
-                    "Size": {
-                        "type": "integer"
-                    },
-                    "Quantity": {
+                    "code": {
                         "type": "integer",
-                        "description": "How much items is stored on selected warehouse"
+                        "example": 123
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "A red cloth"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "description": "How much items is stored on selected warehouse",
+                        "example": 4
+                    }
+                }
+            },
+            "ReservationRequest": {
+                "type": "object",
+                "properties": {
+                    "item_codes": {
+                        "type": "array",
+                        "description": "Item codes to reserve",
+                        "items": {
+                            "type": "integer",
+                            "example": 0
+                        },
+                        "example": [1, 2]
                     }
                 }
             }

@@ -128,6 +128,6 @@ func (handler *_apiHandler) GetWarehouse(w http.ResponseWriter, req *http.Reques
 
 func (handler *_apiHandler) RegisterHandle(_mux *mux.Router) {
 	_mux.HandleFunc("/reserve", handler.MakeReservation).Methods("POST")
-	_mux.HandleFunc("/reserve", handler.FreeReservation).Methods("DELETE")
+	_mux.HandleFunc("/reserve", handler.FreeReservation).Methods("PATCH")
 	_mux.HandleFunc("/warehouses", handler.GetWarehouse).Methods("GET")
 }
