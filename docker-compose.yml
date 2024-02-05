@@ -3,14 +3,16 @@ services:
   database:
     image: postgres
     restart: always
+    env_file: .env
     environment:
-      POSTGRES_DB:       ${DBNAME}
-      POSTGRES_USER:     ${DBUSER}
+      POSTGRES_DB: ${DBNAME}
+      POSTGRES_USER: ${DBUSER}
       POSTGRES_PASSWORD: ${DBPASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d 
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
       interval: 10s
