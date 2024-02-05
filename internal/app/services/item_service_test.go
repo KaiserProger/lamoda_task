@@ -2,6 +2,7 @@ package services_test
 
 import (
 	"context"
+	"lamoda_task/internal/app/models"
 	"lamoda_task/internal/app/persistence/repositories"
 	"lamoda_task/internal/app/services"
 	"testing"
@@ -42,7 +43,7 @@ func fixture(t *testing.T) (services.ItemService, *MockTransactional, *MockItemR
 func TestItemService_MakeReservation(t *testing.T) {
 	t.Parallel()
 
-	svc, txManager, itemRepo, _, reserveRepo := fixture(t)
+	svc, txManager, itemRepo, whRepo, reserveRepo := fixture(t)
 
 	tests := []test{
 		{
@@ -61,7 +62,7 @@ func TestItemService_MakeReservation(t *testing.T) {
 			name: "success",
 			data: []int{1, 1, 1, 2, 2},
 			mock: func() {
-				orders := []*repositories.StoredItem{
+				items := []*repositories.StoredItem{
 					{
 						ItemCode:    1,
 						WarehouseId: 1,
@@ -73,11 +74,24 @@ func TestItemService_MakeReservation(t *testing.T) {
 						Quantity:    5,
 					},
 				}
+				orders := []*models.ReservationItem{
+					{
+						ItemCode:    1,
+						WarehouseId: 1,
+						Quantity:    3,
+					},
+					{
+						ItemCode:    2,
+						WarehouseId: 1,
+						Quantity:    2,
+					},
+				}
 				txManager.EXPECT().WithinTransaction(context.Background(), gomock.Any()).DoAndReturn(func(ctx context.Context, f func(ctx context.Context) error) error {
 					return f(ctx)
 				}).AnyTimes()
-				itemRepo.EXPECT().GetStoredAt(context.Background(), []int{1, 2}).Return(orders, nil).AnyTimes()
-				reserveRepo.EXPECT().MakeReservation(context.Background(), orders).Return(nil)
+				itemRepo.EXPECT().GetStoredAt(context.Background(), []int{1, 2}).Return(items, nil).AnyTimes()
+				reserveRepo.EXPECT().MakeReservation(context.Background(), gomock.Eq(orders)).Return(nil).AnyTimes()
+				whRepo.EXPECT().RemoveFromStock(context.Background(), gomock.Eq(orders)).Return(nil).AnyTimes()
 			},
 		},
 	}

@@ -7,6 +7,7 @@ import (
 	"lamoda_task/internal/app/models"
 	"lamoda_task/internal/app/persistence"
 	"lamoda_task/internal/app/persistence/repositories"
+	"sort"
 )
 
 type Item struct {
@@ -60,6 +61,7 @@ func (svc *_itemServiceImpl) uniqueItemCodes(itemCodes []int) []int {
 		uniqueCodes = append(uniqueCodes, key)
 	}
 
+	sort.Ints(uniqueCodes)
 	return uniqueCodes
 }
 
@@ -90,6 +92,10 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 		if len(storedItems) == 0 {
 			return appErrors.ErrNotFound
 		}
+
+		sort.SliceStable(storedItems, func(i, j int) bool {
+			return storedItems[i].WarehouseId < storedItems[j].WarehouseId && storedItems[i].ItemCode < storedItems[j].ItemCode
+		})
 
 		for _, storedItem := range storedItems {
 			qty := countMap[storedItem.ItemCode]
