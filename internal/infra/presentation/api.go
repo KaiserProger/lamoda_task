@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
+	appErrors "lamoda_task/internal/app/errors"
+
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 )
@@ -56,6 +58,11 @@ func (handler *_apiHandler) MakeReservation(w http.ResponseWriter, req *http.Req
 	}
 
 	if err := handler.svc.MakeReservation(context.Background(), request.ItemCodes); err != nil {
+		if err == appErrors.ErrNotFound {
+			handler.logger.Error("not found", zap.Error(err))
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
 		handler.logger.Error("service execution fail", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -74,6 +81,11 @@ func (handler *_apiHandler) FreeReservation(w http.ResponseWriter, req *http.Req
 	}
 
 	if err := handler.svc.FreeReservation(context.Background(), request.ItemCodes); err != nil {
+		if err == appErrors.ErrNotFound {
+			handler.logger.Error("not found", zap.Error(err))
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
 		handler.logger.Error("service execution fail", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return

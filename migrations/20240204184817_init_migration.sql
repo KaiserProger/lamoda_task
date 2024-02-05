@@ -23,6 +23,7 @@ CREATE TABLE reservations(
     item_code int REFERENCES items(code),
     warehouse_id int REFERENCES warehouses(id),
     quantity int,
+    created_at timestamp DEFAULT timezone('utc', now()),
     PRIMARY KEY (item_code, warehouse_id)
 );
 -- +goose StatementEnd

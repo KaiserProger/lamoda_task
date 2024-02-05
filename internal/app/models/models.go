@@ -21,14 +21,14 @@ type ReservationItem struct {
 	Quantity    int
 }
 
-func (item *ReservationItem) AsIntArgs() [3]int {
-	return [3]int{
+func (item *ReservationItem) AsIntArgs() []int {
+	return []int{
 		item.ItemCode, item.WarehouseId, item.Quantity,
 	}
 }
 
-func (*ReservationItem) MultipleIntArgs(reservation []*ReservationItem) [][3]int {
-	items := make([][3]int, len(reservation))
+func (*ReservationItem) MultipleIntArgs(reservation []*ReservationItem) [][]int {
+	items := make([][]int, len(reservation))
 
 	for _, item := range reservation {
 		items = append(items, item.AsIntArgs())

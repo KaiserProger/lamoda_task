@@ -3,10 +3,12 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
 	appErrors "lamoda_task/internal/app/errors"
 	"lamoda_task/internal/app/models"
 	"lamoda_task/internal/app/persistence"
 	app "lamoda_task/internal/app/persistence/repositories"
+	"strings"
 )
 
 type _reserveRepositoryImpl struct{}
@@ -26,7 +28,7 @@ func (*_reserveRepositoryImpl) MakeReservation(ctx context.Context, orders []*mo
 		return err
 	}
 
-	argsArray := [][3]int{}
+	argsArray := [][]int{}
 
 	for _, order := range orders {
 		argsArray = append(argsArray, order.AsIntArgs())
@@ -53,18 +55,26 @@ func (*_reserveRepositoryImpl) GetReservation(ctx context.Context, itemsCount ma
 
 	reservationItems := make([]*models.ReservationItem, 0)
 
-	getReservationsArgs := [][2]int{}
+	// Prepare get reservations query as it contains IN.
+	// This is a HUGE crutch, but I NEEDED IN to work with arrays.
 
-	for _, row := range getReservationsArgs {
-		itemCode, count := row[0], row[1]
-		getReservationsArgs = append(getReservationsArgs, [2]int{itemCode, count})
+	getReservationsArgs := []any{}
+	rowsStrings := []string{}
+
+	placeholderCounter := 1
+	for itemCode, count := range itemsCount {
+		getReservationsArgs = append(getReservationsArgs, itemCode, count)
+		rowsStrings = append(rowsStrings, strings.Join([]string{fmt.Sprintf("($%d", placeholderCounter), fmt.Sprintf("$%d)", placeholderCounter+1)}, ", "))
+		placeholderCounter += 2
 	}
 
-	reservationRows, err := tx.Query(getReservations, getReservationsArgs)
+	reservationRows, err := tx.Query(strings.Replace(getReservations, "?", strings.Join(rowsStrings, ", "), 1), getReservationsArgs...)
 	if err != nil {
 		return nil, errors.Join(errors.New("get reservation warehouse ids fail"), err)
 	}
 	defer reservationRows.Close()
+
+	// Crutch end.
 
 	for reservationRows.Next() {
 		var reservation models.ReservationItem

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	appErrors "lamoda_task/internal/app/errors"
 	"lamoda_task/internal/app/models"
 	"lamoda_task/internal/app/persistence"
 	"lamoda_task/internal/app/persistence/repositories"
@@ -86,6 +87,10 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 			return errors.Join(errors.New("get warehouses fail"), err)
 		}
 
+		if len(storedItems) == 0 {
+			return appErrors.ErrNotFound
+		}
+
 		for _, storedItem := range storedItems {
 			qty := countMap[storedItem.ItemCode]
 			if qty == 0 {
@@ -112,9 +117,13 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []int) error {
 	countMap := svc.itemCodesAsUniqueMap(itemCodes)
 	return svc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
-		reserveItems, err := svc.reserveRepo.GetReservation(ctx, countMap)
+		reserveItems, err := svc.reserveRepo.GetReservation(txCtx, countMap)
 		if err != nil {
 			return errors.Join(errors.New("get reservation items fail"), err)
+		}
+
+		if len(reserveItems) == 0 {
+			return appErrors.ErrNotFound
 		}
 
 		err = svc.reserveRepo.FreeReservation(txCtx, reserveItems)
@@ -122,7 +131,7 @@ func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []in
 			return errors.Join(errors.New("free reservation fail"), err)
 		}
 
-		err = svc.warehouseRepo.UpdateStock(ctx, reserveItems)
+		err = svc.warehouseRepo.UpdateStock(txCtx, reserveItems)
 		if err != nil {
 			return errors.Join(errors.New("update stock fail"), err)
 		}
