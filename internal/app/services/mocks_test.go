@@ -10,74 +10,74 @@
 package services_test
 
 import (
-        context "context"
-		models "lamoda_task/internal/app/models"
-        repositories "lamoda_task/internal/app/persistence/repositories"
-        reflect "reflect"
+	context "context"
+	models "lamoda_task/internal/app/models"
+	repositories "lamoda_task/internal/app/persistence/repositories"
+	reflect "reflect"
 
-        gomock "go.uber.org/mock/gomock"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockItemRepository is a mock of ItemRepository interface.
 type MockItemRepository struct {
-        ctrl     *gomock.Controller
-        recorder *MockItemRepositoryMockRecorder
+	ctrl     *gomock.Controller
+	recorder *MockItemRepositoryMockRecorder
 }
 
 // MockItemRepositoryMockRecorder is the mock recorder for MockItemRepository.
 type MockItemRepositoryMockRecorder struct {
-        mock *MockItemRepository
+	mock *MockItemRepository
 }
 
 // NewMockItemRepository creates a new mock instance.
 func NewMockItemRepository(ctrl *gomock.Controller) *MockItemRepository {
-        mock := &MockItemRepository{ctrl: ctrl}
-        mock.recorder = &MockItemRepositoryMockRecorder{mock}
-        return mock
+	mock := &MockItemRepository{ctrl: ctrl}
+	mock.recorder = &MockItemRepositoryMockRecorder{mock}
+	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockItemRepository) EXPECT() *MockItemRepositoryMockRecorder {
-        return m.recorder
+	return m.recorder
 }
 
 // GetStoredAt mocks base method.
 func (m *MockItemRepository) GetStoredAt(ctx context.Context, itemCodes []int) ([]*repositories.StoredItem, error) {
-        m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetStoredAt", ctx, itemCodes)
-        ret0, _ := ret[0].([]*repositories.StoredItem)
-        ret1, _ := ret[1].(error)
-        return ret0, ret1
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStoredAt", ctx, itemCodes)
+	ret0, _ := ret[0].([]*repositories.StoredItem)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetStoredAt indicates an expected call of GetStoredAt.
 func (mr *MockItemRepositoryMockRecorder) GetStoredAt(ctx, itemCodes any) *MockItemRepositoryGetStoredAtCall {
-        mr.mock.ctrl.T.Helper()
-        call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStoredAt", reflect.TypeOf((*MockItemRepository)(nil).GetStoredAt), ctx, itemCodes)
-        return &MockItemRepositoryGetStoredAtCall{Call: call}
+	mr.mock.ctrl.T.Helper()
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStoredAt", reflect.TypeOf((*MockItemRepository)(nil).GetStoredAt), ctx, itemCodes)
+	return &MockItemRepositoryGetStoredAtCall{Call: call}
 }
 
 // MockItemRepositoryGetStoredAtCall wrap *gomock.Call
 type MockItemRepositoryGetStoredAtCall struct {
-        *gomock.Call
+	*gomock.Call
 }
 
 // Return rewrite *gomock.Call.Return
 func (c *MockItemRepositoryGetStoredAtCall) Return(arg0 []*repositories.StoredItem, arg1 error) *MockItemRepositoryGetStoredAtCall {
-        c.Call = c.Call.Return(arg0, arg1)
-        return c
+	c.Call = c.Call.Return(arg0, arg1)
+	return c
 }
 
 // Do rewrite *gomock.Call.Do
 func (c *MockItemRepositoryGetStoredAtCall) Do(f func(context.Context, []int) ([]*repositories.StoredItem, error)) *MockItemRepositoryGetStoredAtCall {
-        c.Call = c.Call.Do(f)
-        return c
+	c.Call = c.Call.Do(f)
+	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
 func (c *MockItemRepositoryGetStoredAtCall) DoAndReturn(f func(context.Context, []int) ([]*repositories.StoredItem, error)) *MockItemRepositoryGetStoredAtCall {
-        c.Call = c.Call.DoAndReturn(f)
-        return c
+	c.Call = c.Call.DoAndReturn(f)
+	return c
 }
 
 // MockReserveRepository is a mock of ReserveRepository interface.
