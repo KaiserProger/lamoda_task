@@ -30,6 +30,9 @@
                     "422": {
                         "description": "Invalid item codes"
                     },
+                    "432": {
+                        "description": "Items cannot be reserved - possibly not enough items on stock"
+                    },
                     "500": {
                         "description": "Something went wrong. Developers will check logs later"
                     }
@@ -54,6 +57,9 @@
                     },
                     "422": {
                         "description": "Invalid item codes"
+                    },
+                    "433": {
+                        "description": "Some specified items were not reserved"
                     },
                     "500": {
                         "description": "Something went wrong. Developers will check logs later"
