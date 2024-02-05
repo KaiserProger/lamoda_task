@@ -27,11 +27,11 @@ func (item *ReservationItem) AsIntArgs() []int {
 	}
 }
 
-func (*ReservationItem) MultipleIntArgs(reservation []*ReservationItem) [][]int {
-	items := make([][]int, len(reservation))
+func (*ReservationItem) MultipleIntArgs(reservation []*ReservationItem) []int {
+	items := make([]int, 0)
 
 	for _, item := range reservation {
-		items = append(items, item.AsIntArgs())
+		items = append(items, item.AsIntArgs()...)
 	}
 
 	return items

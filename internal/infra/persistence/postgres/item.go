@@ -31,6 +31,7 @@ func (*_itemRepositoryImpl) GetStoredAt(ctx context.Context, itemCodes []int) ([
 	if err != nil {
 		return nil, errors.Join(errors.New("get stored items fail"), err)
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		storedItem := &app.StoredItem{}

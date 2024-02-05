@@ -3,12 +3,10 @@ package postgres
 import (
 	"context"
 	"errors"
-	"fmt"
 	appErrors "lamoda_task/internal/app/errors"
 	"lamoda_task/internal/app/models"
 	"lamoda_task/internal/app/persistence"
 	app "lamoda_task/internal/app/persistence/repositories"
-	"strings"
 )
 
 type _reserveRepositoryImpl struct{}
@@ -28,13 +26,19 @@ func (*_reserveRepositoryImpl) MakeReservation(ctx context.Context, orders []*mo
 		return err
 	}
 
-	argsArray := [][]int{}
+	argsArray := (&models.ReservationItem{}).MultipleIntArgs(orders)
 
-	for _, order := range orders {
-		argsArray = append(argsArray, order.AsIntArgs())
+	args := make([]any, len(argsArray))
+	for ix, arg := range argsArray {
+		args[ix] = arg
 	}
 
-	_, err = tx.Exec(makeReservationQuery, argsArray)
+	query, err := GenBulkPlaceholders(makeReservationQuery, args, 3)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, args...)
 	if err != nil {
 		return errors.Join(errors.New("insert reservation fail"), err)
 	}
@@ -58,17 +62,17 @@ func (*_reserveRepositoryImpl) GetReservation(ctx context.Context, itemsCount ma
 	// Prepare get reservations query as it contains IN.
 	// This is a HUGE crutch, but I NEEDED IN to work with arrays.
 
-	getReservationsArgs := []any{}
-	rowsStrings := []string{}
-
-	placeholderCounter := 1
+	args := make([]any, 0)
 	for itemCode, count := range itemsCount {
-		getReservationsArgs = append(getReservationsArgs, itemCode, count)
-		rowsStrings = append(rowsStrings, strings.Join([]string{fmt.Sprintf("($%d", placeholderCounter), fmt.Sprintf("$%d)", placeholderCounter+1)}, ", "))
-		placeholderCounter += 2
+		args = append(args, itemCode, count)
 	}
 
-	reservationRows, err := tx.Query(strings.Replace(getReservations, "?", strings.Join(rowsStrings, ", "), 1), getReservationsArgs...)
+	query, err := GenBulkPlaceholders(getReservationsQuery, args, 2)
+	if err != nil {
+		return nil, err
+	}
+
+	reservationRows, err := tx.Query(query, args...)
 	if err != nil {
 		return nil, errors.Join(errors.New("get reservation warehouse ids fail"), err)
 	}
@@ -103,9 +107,19 @@ func (*_reserveRepositoryImpl) FreeReservation(ctx context.Context, reservation 
 		return err
 	}
 
-	dereserveArgs := (&models.ReservationItem{}).MultipleIntArgs(reservation)
+	argsArray := (&models.ReservationItem{}).MultipleIntArgs(reservation)
 
-	_, err = tx.Exec(dereserveQuery, dereserveArgs)
+	args := make([]any, len(argsArray))
+	for ix, arg := range argsArray {
+		args[ix] = arg
+	}
+
+	query, err := GenBulkPlaceholders(dereserveQuery, args, 3)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, args...)
 	if err != nil {
 		return errors.Join(errors.New("dereserve fail"), err)
 	}

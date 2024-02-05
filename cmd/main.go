@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		panic(errors.Join(errors.New("logger did not initialize"), err))
 	}
+	defer logger.Sync()
 
 	logger.Info("logger initialized")
 

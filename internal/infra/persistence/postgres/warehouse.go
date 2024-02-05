@@ -36,15 +36,20 @@ func (*_warehouseRepositoryImpl) Get(ctx context.Context, warehouseId int) (*mod
 	}
 	defer rows.Close()
 
-	var warehouse models.Warehouse
+	var warehouse *models.Warehouse
 
 	for rows.Next() {
+		warehouse = &models.Warehouse{}
 		if err := rows.Scan(
 			&warehouse.Id,
 			&warehouse.Name,
 			&warehouse.Accessible); err != nil {
 			return nil, errors.Join(errors.New("scan warehouse fail"), err)
 		}
+	}
+
+	if warehouse == nil {
+		return nil, appErrors.ErrNotFound
 	}
 
 	itemsRows, err := tx.Query(getWarehouseItemsQuery, warehouseId)
@@ -67,7 +72,7 @@ func (*_warehouseRepositoryImpl) Get(ctx context.Context, warehouseId int) (*mod
 		warehouse.Items = append(warehouse.Items, &item)
 	}
 
-	return &warehouse, nil
+	return warehouse, nil
 }
 
 func (*_warehouseRepositoryImpl) UpdateStock(ctx context.Context, reservation []*models.ReservationItem) error {
@@ -81,9 +86,19 @@ func (*_warehouseRepositoryImpl) UpdateStock(ctx context.Context, reservation []
 		return err
 	}
 
-	dereserveArgs := (&models.ReservationItem{}).MultipleIntArgs(reservation)
+	argsArray := (&models.ReservationItem{}).MultipleIntArgs(reservation)
 
-	_, err = tx.Exec(updateStockQuery, dereserveArgs)
+	args := make([]any, len(argsArray))
+	for ix, arg := range argsArray {
+		args[ix] = arg
+	}
+
+	query, err := GenBulkPlaceholders(updateStockQuery, args, 3)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, args...)
 	if err != nil {
 		return errors.Join(errors.New("update stock fail"), err)
 	}

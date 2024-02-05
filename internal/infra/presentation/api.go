@@ -3,6 +3,7 @@ package presentation
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"lamoda_task/internal/app/services"
 	"net/http"
 	"strconv"
@@ -58,7 +59,7 @@ func (handler *_apiHandler) MakeReservation(w http.ResponseWriter, req *http.Req
 	}
 
 	if err := handler.svc.MakeReservation(context.Background(), request.ItemCodes); err != nil {
-		if err == appErrors.ErrNotFound {
+		if errors.Is(err, appErrors.ErrNotFound) {
 			handler.logger.Error("not found", zap.Error(err))
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -81,7 +82,7 @@ func (handler *_apiHandler) FreeReservation(w http.ResponseWriter, req *http.Req
 	}
 
 	if err := handler.svc.FreeReservation(context.Background(), request.ItemCodes); err != nil {
-		if err == appErrors.ErrNotFound {
+		if errors.Is(err, appErrors.ErrNotFound) {
 			handler.logger.Error("not found", zap.Error(err))
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -99,7 +100,7 @@ func (handler *_apiHandler) GetWarehouse(w http.ResponseWriter, req *http.Reques
 
 	warehouseId, err := strconv.Atoi(warehouseParamId)
 	if err != nil {
-		handler.logger.Error("decode warehouse id param fail", zap.Error(err))
+		handler.logger.Error("decode warehouse id param fail", zap.Error(err), zap.String("param_id", warehouseParamId))
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
@@ -110,13 +111,13 @@ func (handler *_apiHandler) GetWarehouse(w http.ResponseWriter, req *http.Reques
 
 	warehouse, err := handler.svc.Warehouse(context.Background(), request.Id)
 	if err != nil {
+		if errors.Is(err, appErrors.ErrNotFound) {
+			handler.logger.Error("not found", zap.Error(err))
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
 		handler.logger.Error("service execution fail", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	if warehouse == nil {
-		handler.logger.Error("warehouse not found")
-		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
