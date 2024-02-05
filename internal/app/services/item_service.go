@@ -135,6 +135,10 @@ func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []in
 			return errors.Join(errors.New("get reservation items fail"), err)
 		}
 
+		if len(reserveItems) == 0 {
+			return appErrors.ErrNotFound
+		}
+
 		for _, item := range reserveItems {
 			qty := countMap[item.ItemCode]
 			if qty == 0 {
@@ -151,8 +155,10 @@ func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []in
 			})
 		}
 
-		if len(reserveItems) == 0 {
-			return appErrors.ErrNotFound
+		for _, count := range countMap {
+			if count > 0 {
+				return appErrors.ErrItemIsNotReserved
+			}
 		}
 
 		err = svc.reserveRepo.FreeReservation(txCtx, dereserveOrders)

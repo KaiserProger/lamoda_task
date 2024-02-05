@@ -32,6 +32,7 @@ const (
 	getReservationsQuery = `
 		SELECT item_code, warehouse_id, quantity FROM reservations
 		WHERE item_code = ANY ($1::int[])
+		AND quantity > 0
 		ORDER BY created_at DESC;`
 	makeReservationQuery = `
 		INSERT INTO reservations (item_code, warehouse_id, quantity)

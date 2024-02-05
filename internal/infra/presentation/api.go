@@ -66,7 +66,7 @@ func (handler *_apiHandler) MakeReservation(w http.ResponseWriter, req *http.Req
 		} else if errors.Is(err, appErrors.ErrImpossibleReserve) {
 			handler.logger.Error("impossible to reserve items", zap.Error(err))
 			w.WriteHeader(appErrors.ImpossibleStatusCode)
-			w.Write([]byte("impossible to reserve items"))
+			w.Write([]byte(appErrors.ErrImpossibleReserve.Error()))
 			return
 		}
 		handler.logger.Error("service execution fail", zap.Error(err))
@@ -90,6 +90,11 @@ func (handler *_apiHandler) FreeReservation(w http.ResponseWriter, req *http.Req
 		if errors.Is(err, appErrors.ErrNotFound) {
 			handler.logger.Error("not found", zap.Error(err))
 			w.WriteHeader(http.StatusNotFound)
+			return
+		} else if errors.Is(err, appErrors.ErrItemIsNotReserved) {
+			handler.logger.Error("items contains non-reserved", zap.Error(err))
+			w.WriteHeader(appErrors.IsNotReservedStatusCode)
+			w.Write([]byte(appErrors.ErrItemIsNotReserved.Error()))
 			return
 		}
 		handler.logger.Error("service execution fail", zap.Error(err))
