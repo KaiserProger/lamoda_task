@@ -3,7 +3,9 @@ package services
 import (
 	"context"
 	"errors"
+
 	appErrors "lamoda_task/internal/app/errors"
+
 	"lamoda_task/internal/app/models"
 	"lamoda_task/internal/app/persistence"
 	"lamoda_task/internal/app/persistence/repositories"
