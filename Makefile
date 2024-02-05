@@ -4,9 +4,12 @@ export
 LOCAL_BIN:=$(CURDIR)/bin
 PATH:=$(LOCAL_BIN):$(PATH)
 
-up: ### Run docker-compose
+up: ### Run docker compose
 	docker compose up --build -d && docker compose logs -f
 .PHONY: up
+
+stop: ### Run docker compose stop
+	docker compose stop
 
 test: ### run test
 	go test -v -cover -race ./internal/...
