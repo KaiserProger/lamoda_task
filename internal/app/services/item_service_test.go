@@ -93,6 +93,42 @@ func TestItemService_MakeReservation(t *testing.T) {
 				reserveRepo.EXPECT().MakeReservation(context.Background(), gomock.Eq(orders)).Return(nil).AnyTimes()
 				whRepo.EXPECT().RemoveFromStock(context.Background(), gomock.Eq(orders)).Return(nil).AnyTimes()
 			},
+			result: nil,
+			err:    nil,
+		},
+		{
+			name: "not enough items on stock",
+			data: []int{1, 1, 1, 1, 1, 2, 2, 2, 4, 4, 7},
+			mock: func() {
+				items := []*repositories.StoredItem{
+					{
+						ItemCode:    1,
+						WarehouseId: 1,
+						Quantity:    4,
+					},
+					{
+						ItemCode:    2,
+						WarehouseId: 1,
+						Quantity:    3,
+					},
+					{
+						ItemCode:    4,
+						WarehouseId: 2,
+						Quantity:    1,
+					},
+					{
+						ItemCode:    7,
+						WarehouseId: 6,
+						Quantity:    2,
+					},
+				}
+				txManager.EXPECT().WithinTransaction(context.Background(), gomock.Any()).DoAndReturn(func(ctx context.Context, f func(ctx context.Context) error) error {
+					return f(ctx)
+				}).AnyTimes()
+				itemRepo.EXPECT().GetStoredAt(context.Background(), []int{1, 2, 4, 7}).Return(items, nil).AnyTimes()
+			},
+			result: nil,
+			err:    appErrors.ErrImpossibleReserve,
 		},
 	}
 
@@ -112,4 +148,28 @@ func TestItemService_MakeReservation(t *testing.T) {
 		})
 	}
 
+}
+
+func TestItemService_FreeReservation(t *testing.T) {
+	t.Parallel()
+
+	svc, txManager, itemRepo, whRepo, reserveRepo := fixture(t)
+
+	tests := []test{}
+
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.mock()
+
+			data, ok := tt.data.([]int)
+			require.True(t, ok)
+
+			err := svc.MakeReservation(context.Background(), data)
+			require.Equal(t, tt.err, err)
+		})
+	}
 }
