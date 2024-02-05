@@ -107,6 +107,12 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 			})
 		}
 
+		for _, count := range countMap {
+			if count > 0 {
+				return appErrors.ErrImpossibleReserve
+			}
+		}
+
 		if err := svc.reserveRepo.MakeReservation(txCtx, reserveOrders); err != nil {
 			return errors.Join(errors.New("make reservation fail"), err)
 		}
@@ -116,22 +122,39 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 
 func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []int) error {
 	countMap := svc.itemCodesAsUniqueMap(itemCodes)
+	dereserveOrders := make([]*models.ReservationItem, 0)
 	return svc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
 		reserveItems, err := svc.reserveRepo.GetReservation(txCtx, countMap)
 		if err != nil {
 			return errors.Join(errors.New("get reservation items fail"), err)
 		}
 
+		for _, item := range reserveItems {
+			qty := countMap[item.ItemCode]
+			if qty == 0 {
+				continue
+			}
+
+			finalQty := min(qty, item.Quantity)
+			countMap[item.ItemCode] -= finalQty
+
+			dereserveOrders = append(dereserveOrders, &models.ReservationItem{
+				ItemCode:    item.ItemCode,
+				WarehouseId: item.WarehouseId,
+				Quantity:    finalQty,
+			})
+		}
+
 		if len(reserveItems) == 0 {
 			return appErrors.ErrNotFound
 		}
 
-		err = svc.reserveRepo.FreeReservation(txCtx, reserveItems)
+		err = svc.reserveRepo.FreeReservation(txCtx, dereserveOrders)
 		if err != nil {
 			return errors.Join(errors.New("free reservation fail"), err)
 		}
 
-		err = svc.warehouseRepo.UpdateStock(txCtx, reserveItems)
+		err = svc.warehouseRepo.UpdateStock(txCtx, dereserveOrders)
 		if err != nil {
 			return errors.Join(errors.New("update stock fail"), err)
 		}

@@ -63,6 +63,11 @@ func (handler *_apiHandler) MakeReservation(w http.ResponseWriter, req *http.Req
 			handler.logger.Error("not found", zap.Error(err))
 			w.WriteHeader(http.StatusNotFound)
 			return
+		} else if errors.Is(err, appErrors.ErrImpossibleReserve) {
+			handler.logger.Error("impossible to reserve items", zap.Error(err))
+			w.WriteHeader(appErrors.ImpossibleStatusCode)
+			w.Write([]byte("impossible to reserve items"))
+			return
 		}
 		handler.logger.Error("service execution fail", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)

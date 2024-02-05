@@ -31,13 +31,18 @@ const (
 	`
 	getReservationsQuery = `
 		SELECT item_code, warehouse_id, quantity FROM reservations
-		WHERE (item_code, quantity) IN (?)
+		WHERE item_code = ANY ($1::int[])
 		ORDER BY created_at DESC;`
 	makeReservationQuery = `
 		INSERT INTO reservations (item_code, warehouse_id, quantity)
 		VALUES ?
 		ON CONFLICT (item_code, warehouse_id) DO
 		UPDATE SET quantity=reservations.quantity+EXCLUDED.quantity;`
+	removeFromStockQuery = `
+	INSERT INTO warehouses_items (item_code, warehouse_id, quantity)
+	VALUES ?
+	ON CONFLICT (item_code, warehouse_id) DO
+	UPDATE SET quantity=warehouses_items.quantity-EXCLUDED.quantity;`
 	dereserveQuery = `
 		INSERT INTO reservations (item_code, warehouse_id, quantity)
 		VALUES ?

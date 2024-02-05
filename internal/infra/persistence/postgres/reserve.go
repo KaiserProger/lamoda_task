@@ -43,6 +43,16 @@ func (*_reserveRepositoryImpl) MakeReservation(ctx context.Context, orders []*mo
 		return errors.Join(errors.New("insert reservation fail"), err)
 	}
 
+	query, err = GenBulkPlaceholders(removeFromStockQuery, args, 3)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, args...)
+	if err != nil {
+		return errors.Join(errors.New("remove from stock fail"), err)
+	}
+
 	return nil
 }
 
@@ -62,17 +72,12 @@ func (*_reserveRepositoryImpl) GetReservation(ctx context.Context, itemsCount ma
 	// Prepare get reservations query as it contains IN.
 	// This is a HUGE crutch, but I NEEDED IN to work with arrays.
 
-	args := make([]any, 0)
-	for itemCode, count := range itemsCount {
-		args = append(args, itemCode, count)
+	itemCodes := make([]int, 0, len(itemsCount))
+	for k := range itemsCount {
+		itemCodes = append(itemCodes, k)
 	}
 
-	query, err := GenBulkPlaceholders(getReservationsQuery, args, 2)
-	if err != nil {
-		return nil, err
-	}
-
-	reservationRows, err := tx.Query(query, args...)
+	reservationRows, err := tx.Query(getReservationsQuery, itemCodes)
 	if err != nil {
 		return nil, errors.Join(errors.New("get reservation warehouse ids fail"), err)
 	}
