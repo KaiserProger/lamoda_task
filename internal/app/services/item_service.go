@@ -113,8 +113,14 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 			}
 		}
 
-		if err := svc.reserveRepo.MakeReservation(txCtx, reserveOrders); err != nil {
+		err = svc.reserveRepo.MakeReservation(txCtx, reserveOrders)
+		if err != nil {
 			return errors.Join(errors.New("make reservation fail"), err)
+		}
+
+		err = svc.warehouseRepo.RemoveFromStock(txCtx, reserveOrders)
+		if err != nil {
+			return errors.Join(errors.New("remove from stock fail"), err)
 		}
 		return nil
 	})
@@ -154,7 +160,7 @@ func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []in
 			return errors.Join(errors.New("free reservation fail"), err)
 		}
 
-		err = svc.warehouseRepo.UpdateStock(txCtx, dereserveOrders)
+		err = svc.warehouseRepo.AddToStock(txCtx, dereserveOrders)
 		if err != nil {
 			return errors.Join(errors.New("update stock fail"), err)
 		}

@@ -43,16 +43,6 @@ func (*_reserveRepositoryImpl) MakeReservation(ctx context.Context, orders []*mo
 		return errors.Join(errors.New("insert reservation fail"), err)
 	}
 
-	query, err = GenBulkPlaceholders(removeFromStockQuery, args, 3)
-	if err != nil {
-		return err
-	}
-
-	_, err = tx.Exec(query, args...)
-	if err != nil {
-		return errors.Join(errors.New("remove from stock fail"), err)
-	}
-
 	return nil
 }
 

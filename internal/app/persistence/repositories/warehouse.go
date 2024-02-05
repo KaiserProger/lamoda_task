@@ -7,5 +7,6 @@ import (
 
 type WarehouseRepository interface {
 	Get(ctx context.Context, warehouseId int) (*models.Warehouse, error)
-	UpdateStock(ctx context.Context, reservation []*models.ReservationItem) error
+	AddToStock(ctx context.Context, reservation []*models.ReservationItem) error
+	RemoveFromStock(ctx context.Context, reservation []*models.ReservationItem) error
 }

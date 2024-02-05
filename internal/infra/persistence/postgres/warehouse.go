@@ -75,7 +75,7 @@ func (*_warehouseRepositoryImpl) Get(ctx context.Context, warehouseId int) (*mod
 	return warehouse, nil
 }
 
-func (*_warehouseRepositoryImpl) UpdateStock(ctx context.Context, reservation []*models.ReservationItem) error {
+func (*_warehouseRepositoryImpl) AddToStock(ctx context.Context, reservation []*models.ReservationItem) error {
 	txCtx, ok := ctx.(persistence.TransactionalContext)
 	if !ok {
 		return appErrors.ErrNotTransactional
@@ -93,7 +93,38 @@ func (*_warehouseRepositoryImpl) UpdateStock(ctx context.Context, reservation []
 		args[ix] = arg
 	}
 
-	query, err := GenBulkPlaceholders(updateStockQuery, args, 3)
+	query, err := GenBulkPlaceholders(addToStockQuery, args, 3)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, args...)
+	if err != nil {
+		return errors.Join(errors.New("update stock fail"), err)
+	}
+
+	return nil
+}
+
+func (*_warehouseRepositoryImpl) RemoveFromStock(ctx context.Context, reservation []*models.ReservationItem) error {
+	txCtx, ok := ctx.(persistence.TransactionalContext)
+	if !ok {
+		return appErrors.ErrNotTransactional
+	}
+
+	tx, err := txCtx.GetTx()
+	if err != nil {
+		return err
+	}
+
+	argsArray := (&models.ReservationItem{}).MultipleIntArgs(reservation)
+
+	args := make([]any, len(argsArray))
+	for ix, arg := range argsArray {
+		args[ix] = arg
+	}
+
+	query, err := GenBulkPlaceholders(removeFromStockQuery, args, 3)
 	if err != nil {
 		return err
 	}
