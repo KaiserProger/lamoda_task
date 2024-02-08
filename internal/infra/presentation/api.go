@@ -106,7 +106,7 @@ func (handler *_apiHandler) FreeReservation(w http.ResponseWriter, req *http.Req
 }
 
 func (handler *_apiHandler) GetWarehouse(w http.ResponseWriter, req *http.Request) {
-	warehouseParamId := req.URL.Query().Get("id")
+	warehouseParamId := req.URL.Query().Get("warehouse_id")
 
 	warehouseId, err := strconv.Atoi(warehouseParamId)
 	if err != nil {
