@@ -144,7 +144,7 @@ func TestItemService_MakeReservation(t *testing.T) {
 			require.True(t, ok)
 
 			err := svc.MakeReservation(context.Background(), data)
-			require.Equal(t, tt.err, err)
+			require.ErrorIs(t, err, tt.err)
 		})
 	}
 
@@ -163,7 +163,11 @@ func TestItemService_FreeReservation(t *testing.T) {
 				txManager.EXPECT().WithinTransaction(context.Background(), gomock.Any()).DoAndReturn(func(ctx context.Context, f func(ctx context.Context) error) error {
 					return f(ctx)
 				}).AnyTimes()
-				reserveRepo.EXPECT().GetReservation(context.Background(), gomock.Any()).Return(nil, nil)
+				reserveRepo.EXPECT().GetReservation(context.Background(), gomock.Eq(map[int]int{
+					1: 1,
+					2: 1,
+					3: 1,
+					4: 1})).Return(nil, nil)
 			},
 			result: nil,
 			err:    appErrors.ErrNotFound,
@@ -197,24 +201,24 @@ func TestItemService_FreeReservation(t *testing.T) {
 				txManager.EXPECT().WithinTransaction(context.Background(), gomock.Any()).DoAndReturn(func(ctx context.Context, f func(ctx context.Context) error) error {
 					return f(ctx)
 				}).AnyTimes()
-				reserveRepo.EXPECT().GetReservation(context.Background(), map[int]int{
+				reserveRepo.EXPECT().GetReservation(context.Background(), gomock.Eq(map[int]int{
 					1: 5,
 					2: 3,
 					4: 2,
-					7: 1}).Return(items, nil).AnyTimes()
+					7: 1})).Return(items, nil).AnyTimes()
 			},
 			result: nil,
-			err:    appErrors.ErrImpossibleReserve,
+			err:    appErrors.ErrItemIsNotReserved,
 		},
 		{
 			name: "success",
-			data: []int{1, 1, 1, 1, 1, 2, 2, 2, 4, 4, 7},
+			data: []int{1, 1, 1, 1, 1, 1, 2, 2, 2, 4, 4, 7},
 			mock: func() {
 				items := []*models.ReservationItem{
 					{
 						ItemCode:    1,
 						WarehouseId: 1,
-						Quantity:    5,
+						Quantity:    6,
 					},
 					{
 						ItemCode:    2,
@@ -229,19 +233,19 @@ func TestItemService_FreeReservation(t *testing.T) {
 					{
 						ItemCode:    7,
 						WarehouseId: 6,
-						Quantity:    2,
+						Quantity:    1,
 					},
 				}
 				txManager.EXPECT().WithinTransaction(context.Background(), gomock.Any()).DoAndReturn(func(ctx context.Context, f func(ctx context.Context) error) error {
 					return f(ctx)
 				}).AnyTimes()
-				reserveRepo.EXPECT().GetReservation(context.Background(), map[int]int{
-					1: 5,
+				reserveRepo.EXPECT().GetReservation(context.Background(), gomock.Eq(map[int]int{
+					1: 6,
 					2: 3,
 					4: 2,
-					7: 1}).Return(items, nil).AnyTimes()
-				reserveRepo.EXPECT().FreeReservation(context.Background(), items).Return(nil)
-				whRepo.EXPECT().AddToStock(context.Background(), items).Return(nil)
+					7: 1})).Return(items, nil).AnyTimes()
+				reserveRepo.EXPECT().FreeReservation(context.Background(), gomock.Eq(items)).Return(nil)
+				whRepo.EXPECT().AddToStock(context.Background(), gomock.Eq(items)).Return(nil)
 			},
 			result: nil,
 			err:    nil,
@@ -258,8 +262,8 @@ func TestItemService_FreeReservation(t *testing.T) {
 			data, ok := tt.data.([]int)
 			require.True(t, ok)
 
-			err := svc.MakeReservation(context.Background(), data)
-			require.Equal(t, tt.err, err)
+			err := svc.FreeReservation(context.Background(), data)
+			require.ErrorIs(t, err, tt.err)
 		})
 	}
 }

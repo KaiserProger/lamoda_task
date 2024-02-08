@@ -96,7 +96,7 @@ func (svc *_itemServiceImpl) MakeReservation(ctx context.Context, itemCodes []in
 		}
 
 		sort.SliceStable(storedItems, func(i, j int) bool {
-			return storedItems[i].WarehouseId < storedItems[j].WarehouseId && storedItems[i].ItemCode < storedItems[j].ItemCode
+			return storedItems[i].ItemCode < storedItems[j].ItemCode && storedItems[i].WarehouseId < storedItems[j].WarehouseId
 		})
 
 		for _, storedItem := range storedItems {
@@ -168,6 +168,10 @@ func (svc *_itemServiceImpl) FreeReservation(ctx context.Context, itemCodes []in
 				return appErrors.ErrItemIsNotReserved
 			}
 		}
+
+		sort.SliceStable(dereserveOrders, func(i, j int) bool {
+			return dereserveOrders[i].ItemCode < dereserveOrders[j].ItemCode && dereserveOrders[i].WarehouseId < dereserveOrders[j].WarehouseId
+		})
 
 		err = svc.reserveRepo.FreeReservation(txCtx, dereserveOrders)
 		if err != nil {
