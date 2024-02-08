@@ -1,1 +1,614 @@
-{"item":[{"name":"reserve","description":"","item":[{"id":"963a16cd-a0e1-47b0-93d3-bbd638a5184c","name":"Makes a new reservation","request":{"name":"Makes a new reservation","description":{"content":"Makes a new items reservation. Can reserve items on multiple warehouses","type":"text/plain"},"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"POST","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}},"auth":null},"response":[{"id":"3a87a00b-9d8c-4e18-a403-b409213ed132","name":"Reservation created successfully","originalRequest":{"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"POST","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}}},"status":"OK","code":200,"header":[],"cookie":[],"_postman_previewlanguage":"text"},{"id":"cbb67dac-4e6e-4ade-8fbf-110328a25e25","name":"Invalid item codes","originalRequest":{"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"POST","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}}},"status":"Unprocessable Entity (WebDAV) (RFC 4918)","code":422,"header":[],"cookie":[],"_postman_previewlanguage":"text"},{"id":"cfda3484-44a9-4cb9-90ac-b148f3dbec91","name":"Items cannot be reserved - possibly not enough items on stock","originalRequest":{"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"POST","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}}},"code":432,"header":[],"cookie":[],"_postman_previewlanguage":"text"},{"id":"677e87f7-a23e-43a2-9f4e-ec814feca8ba","name":"Something went wrong. Developers will check logs later","originalRequest":{"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"POST","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}}},"status":"Internal Server Error","code":500,"header":[],"cookie":[],"_postman_previewlanguage":"text"}],"event":[],"protocolProfileBehavior":{"disableBodyPruning":true}},{"id":"196ef521-94ee-4a99-bb2b-84ea0945de29","name":"Frees existing reservation","request":{"name":"Frees existing reservation","description":{"content":"Frees existing items reservation. Can free reservation on multiple warehouses","type":"text/plain"},"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"PATCH","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}},"auth":null},"response":[{"id":"5ab5d5d1-68b9-4d4a-a287-4c6ffaf06b6d","name":"Reservation freed successfully","originalRequest":{"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"PATCH","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}}},"status":"OK","code":200,"header":[],"cookie":[],"_postman_previewlanguage":"text"},{"id":"ec878872-8ff2-4b1c-ad77-67b74bcd938d","name":"Invalid item codes","originalRequest":{"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"PATCH","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}}},"status":"Unprocessable Entity (WebDAV) (RFC 4918)","code":422,"header":[],"cookie":[],"_postman_previewlanguage":"text"},{"id":"b0cf41f9-47aa-4116-b411-4910b50df1cb","name":"Some specified items were not reserved","originalRequest":{"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"PATCH","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}}},"code":433,"header":[],"cookie":[],"_postman_previewlanguage":"text"},{"id":"c6a0e1dd-8993-4482-bb2b-2778029a1d11","name":"Something went wrong. Developers will check logs later","originalRequest":{"url":{"path":["reserve"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"application/json"}],"method":"PATCH","body":{"mode":"raw","raw":"{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}","options":{"raw":{"headerFamily":"json","language":"json"}}}},"status":"Internal Server Error","code":500,"header":[],"cookie":[],"_postman_previewlanguage":"text"}],"event":[],"protocolProfileBehavior":{"disableBodyPruning":true}}]},{"name":"warehouses","description":"","item":[{"id":"1fe4de23-1a6c-4d6d-9fad-477b668cbda9","name":"Get warehouse by ID","request":{"name":"Get warehouse by ID","description":{"content":"Returns a warehouse by ID.","type":"text/plain"},"url":{"path":["warehouses"],"host":["{{baseUrl}}"],"query":[{"disabled":false,"description":{"content":"(Required) Warehouse ID","type":"text/plain"},"key":"warehouse_id","value":"1"}],"variable":[]},"header":[{"key":"Accept","value":"application/json"}],"method":"GET","body":{},"auth":null},"response":[{"id":"6abc0cf7-5675-487b-a5ce-db1731556090","name":"Warehouse read succesfully","originalRequest":{"url":{"path":["warehouses"],"host":["{{baseUrl}}"],"query":[{"disabled":false,"description":{"content":"(Required) Warehouse ID","type":"text/plain"},"key":"warehouse_id","value":"1"}],"variable":[]},"header":[{"key":"Accept","value":"application/json"}],"method":"GET","body":{}},"status":"OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{\n  \"name\": \"A warehouse\",\n  \"accessible\": true,\n  \"items\": [\n    {\n      \"code\": 123,\n      \"name\": \"A red cloth\",\n      \"size\": 10,\n      \"quantity\": 4\n    },\n    {\n      \"code\": 123,\n      \"name\": \"A red cloth\",\n      \"size\": 10,\n      \"quantity\": 4\n    }\n  ]\n}","cookie":[],"_postman_previewlanguage":"json"},{"id":"5a733773-c07b-45ba-a020-5d0ac553c54f","name":"Warehouse not found","originalRequest":{"url":{"path":["warehouses"],"host":["{{baseUrl}}"],"query":[{"disabled":false,"description":{"content":"(Required) Warehouse ID","type":"text/plain"},"key":"warehouse_id","value":"1"}],"variable":[]},"method":"GET","body":{}},"status":"Not Found","code":404,"header":[],"cookie":[],"_postman_previewlanguage":"text"},{"id":"e43ca472-c749-4c83-ae19-5b1e58503d4b","name":"Invalid warehouse id in params","originalRequest":{"url":{"path":["warehouses"],"host":["{{baseUrl}}"],"query":[{"disabled":false,"description":{"content":"(Required) Warehouse ID","type":"text/plain"},"key":"warehouse_id","value":"1"}],"variable":[]},"method":"GET","body":{}},"status":"Unprocessable Entity (WebDAV) (RFC 4918)","code":422,"header":[],"cookie":[],"_postman_previewlanguage":"text"},{"id":"9ee10dc9-17db-43f4-9cce-37d1eebdf0d7","name":"Something went wrong. Developers will check logs later","originalRequest":{"url":{"path":["warehouses"],"host":["{{baseUrl}}"],"query":[{"disabled":false,"description":{"content":"(Required) Warehouse ID","type":"text/plain"},"key":"warehouse_id","value":"1"}],"variable":[]},"method":"GET","body":{}},"status":"Internal Server Error","code":500,"header":[],"cookie":[],"_postman_previewlanguage":"text"}],"event":[],"protocolProfileBehavior":{"disableBodyPruning":true}}]}],"event":[],"variable":[{"key":"baseUrl","value":"http://localhost:8080/"}],"info":{"_postman_id":"b3d4929b-e5dd-4e53-afdb-29d1cf5c9e12","name":"Lamoda task Web API Specification","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json","description":{"content":"This is a Web API for Lamoda test task. It can do reservations and get warehouses","type":"text/plain"}}}
+{
+    "item": [
+        {
+            "name": "reserve",
+            "description": "",
+            "item": [
+                {
+                    "id": "963a16cd-a0e1-47b0-93d3-bbd638a5184c",
+                    "name": "Makes a new reservation",
+                    "request": {
+                        "name": "Makes a new reservation",
+                        "description": {
+                            "content": "Makes a new items reservation. Can reserve items on multiple warehouses",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "reserve"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "headerFamily": "json",
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "3a87a00b-9d8c-4e18-a403-b409213ed132",
+                            "name": "Reservation created successfully",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "reserve"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        },
+                        {
+                            "id": "cbb67dac-4e6e-4ade-8fbf-110328a25e25",
+                            "name": "Invalid item codes",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "reserve"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+                            "code": 422,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        },
+                        {
+                            "id": "cfda3484-44a9-4cb9-90ac-b148f3dbec91",
+                            "name": "Items cannot be reserved - possibly not enough items on stock",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "reserve"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "code": 432,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        },
+                        {
+                            "id": "677e87f7-a23e-43a2-9f4e-ec814feca8ba",
+                            "name": "Something went wrong. Developers will check logs later",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "reserve"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "id": "196ef521-94ee-4a99-bb2b-84ea0945de29",
+                    "name": "Frees existing reservation",
+                    "request": {
+                        "name": "Frees existing reservation",
+                        "description": {
+                            "content": "Frees existing items reservation. Can free reservation on multiple warehouses",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "reserve"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "PATCH",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "headerFamily": "json",
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "5ab5d5d1-68b9-4d4a-a287-4c6ffaf06b6d",
+                            "name": "Reservation freed successfully",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "reserve"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "PATCH",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        },
+                        {
+                            "id": "ec878872-8ff2-4b1c-ad77-67b74bcd938d",
+                            "name": "Invalid item codes",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "reserve"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "PATCH",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+                            "code": 422,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        },
+                        {
+                            "id": "b0cf41f9-47aa-4116-b411-4910b50df1cb",
+                            "name": "Some specified items were not reserved",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "reserve"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "PATCH",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "code": 433,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        },
+                        {
+                            "id": "c6a0e1dd-8993-4482-bb2b-2778029a1d11",
+                            "name": "Something went wrong. Developers will check logs later",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "reserve"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "PATCH",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"item_codes\": [\n    1,\n    2\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "warehouses",
+            "description": "",
+            "item": [
+                {
+                    "id": "1fe4de23-1a6c-4d6d-9fad-477b668cbda9",
+                    "name": "Get warehouse by ID",
+                    "request": {
+                        "name": "Get warehouse by ID",
+                        "description": {
+                            "content": "Returns a warehouse by ID.",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "warehouses"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "(Required) Warehouse ID",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "warehouse_id",
+                                    "value": "1"
+                                }
+                            ],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "GET",
+                        "body": {},
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "6abc0cf7-5675-487b-a5ce-db1731556090",
+                            "name": "Warehouse read succesfully",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "warehouses"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "(Required) Warehouse ID",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "warehouse_id",
+                                            "value": "1"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"name\": \"A warehouse\",\n  \"accessible\": true,\n  \"items\": [\n    {\n      \"code\": 123,\n      \"name\": \"A red cloth\",\n      \"size\": 10,\n      \"quantity\": 4\n    },\n    {\n      \"code\": 123,\n      \"name\": \"A red cloth\",\n      \"size\": 10,\n      \"quantity\": 4\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "5a733773-c07b-45ba-a020-5d0ac553c54f",
+                            "name": "Warehouse not found",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "warehouses"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "(Required) Warehouse ID",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "warehouse_id",
+                                            "value": "1"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Not Found",
+                            "code": 404,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        },
+                        {
+                            "id": "e43ca472-c749-4c83-ae19-5b1e58503d4b",
+                            "name": "Invalid warehouse id in params",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "warehouses"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "(Required) Warehouse ID",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "warehouse_id",
+                                            "value": "1"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+                            "code": 422,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        },
+                        {
+                            "id": "9ee10dc9-17db-43f4-9cce-37d1eebdf0d7",
+                            "name": "Something went wrong. Developers will check logs later",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "warehouses"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "(Required) Warehouse ID",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "warehouse_id",
+                                            "value": "1"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [],
+                            "cookie": [],
+                            "_postman_previewlanguage": "text"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        }
+    ],
+    "event": [],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8080"
+        }
+    ],
+    "info": {
+        "_postman_id": "b3d4929b-e5dd-4e53-afdb-29d1cf5c9e12",
+        "name": "Lamoda task Web API Specification",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": {
+            "content": "This is a Web API for Lamoda test task. It can do reservations and get warehouses",
+            "type": "text/plain"
+        }
+    }
+}
