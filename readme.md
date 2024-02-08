@@ -6,7 +6,7 @@ This repository was written as a solution to test task by Lamoda.
 - cd to directory
 - If you start service not from localhost, then change servers.url parameter to server address
 - make up (start service in docker)
-- make down to shutdown service
+- make stop to shutdown service
 ## Start tests
 - make test (unit tests)
 - make integration-test (integration tests are not done yet)
