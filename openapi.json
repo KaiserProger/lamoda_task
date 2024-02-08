@@ -1,12 +1,14 @@
 {
     "openapi": "3.0.2",
     "info": {
-      "title": "Lamoda task Web API Specification",
-      "description": "This is a Web API for Lamoda test task. It can do reservations and get warehouses",
-      "version": "1.0"
+        "title": "Lamoda task Web API Specification",
+        "description": "This is a Web API for Lamoda test task. It can do reservations and get warehouses",
+        "version": "1.0"
     },
     "servers": [
-      {"url": "https://api.server.test/v1"}
+        {
+            "url": "https://localhost:8080/"
+        }
     ],
     "paths": {
         "/reserve": {
@@ -72,16 +74,18 @@
                 "summary": "Get warehouse by ID",
                 "operationId": "get_warehouse",
                 "description": "Returns a warehouse by ID.",
-                "parameters": [{
-                    "name": "warehouse_id",
-                    "in": "query",
-                    "description": "Warehouse ID",
-                    "required": true,
-                    "schema": {
-                        "type": "integer",
-                        "example": 1
+                "parameters": [
+                    {
+                        "name": "warehouse_id",
+                        "in": "query",
+                        "description": "Warehouse ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
                     }
-                }],
+                ],
                 "responses": {
                     "200": {
                         "description": "Warehouse read succesfully",
@@ -160,7 +164,10 @@
                             "type": "integer",
                             "example": 0
                         },
-                        "example": [1, 2]
+                        "example": [
+                            1,
+                            2
+                        ]
                     }
                 }
             }
